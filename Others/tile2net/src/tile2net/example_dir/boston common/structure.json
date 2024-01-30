@@ -1,0 +1,18 @@
+{
+    "config": "/home/rafi/tile2net/src/tile2net/tileseg/config.py",
+    "assets": {
+        "weights": {
+            "satellite_2021": "/home/rafi/tile2net/src/tile2net/raster/resources/assets/weights/satellite_2021.pth",
+            "hrnetv2_w48_imagenet_pretrained": "/home/rafi/tile2net/src/tile2net/raster/resources/assets/weights/hrnetv2_w48_imagenet_pretrained.pth"
+        }
+    },
+    "tiles": {
+        "info": "example_dir/boston common/tiles/boston common_256_info.json",
+        "static": "example_dir/boston common/tiles/static/ma/256_20",
+        "stitched": "example_dir/boston common/tiles/stitched/256_20_2"
+    },
+    "polygons": "example_dir/boston common/polygons",
+    "network": "example_dir/boston common/network",
+    "segmentation": "example_dir/boston common/segmentation",
+    "name": "boston common"
+}
