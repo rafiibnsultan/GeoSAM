@@ -7,3 +7,14 @@ This repository is dedicated to the work of GeoSAM. Please find the paper here: 
 
 <img src="Pipeline.png" alt="GeoSAM">
 
+## Citations
+
+If these codes are helpful for your study, please cite:
+
+```bibtex
+@article{sultan2023geosam,
+  title={GeoSAM: Fine-tuning SAM with sparse and dense visual prompting for automated segmentation of mobility infrastructure},
+  author={Sultan, Rafi Ibn and Li, Chengyin and Zhu, Hui and Khanduri, Prashant and Brocanelli, Marco and Zhu, Dongxiao},
+  journal={arXiv preprint arXiv:2311.11319},
+  year={2023}
+}
