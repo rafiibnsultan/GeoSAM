@@ -1,6 +1,7 @@
 # GeoSAM: Fine-tuning SAM with Sparse and Dense Visual Prompting for Automated Segmentation of Mobility Infrastructure
 
 This repository is dedicated to the work of GeoSAM. Please find the paper here: <a href="https://arxiv.org/abs/2311.11319">Link</a>
+Also, please find the <a href=https://waynestateprod-my.sharepoint.com/:u:/g/personal/hm4013_wayne_edu/EXvJFrshs9RAm68KYnkKJ7gB4D4gB65CCXmasoDYUIplMw?e=6h7CKx>link</a> for the weights.
 
 
 This work has been submitted. Waiting for the decision.
