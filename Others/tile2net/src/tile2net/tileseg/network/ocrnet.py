@@ -47,7 +47,6 @@ class OCR_block(nn.Module):
     def __init__(self, high_level_ch):
         super(OCR_block, self).__init__()
 
-        print("__init__OCR_Block")
         ocr_mid_channels = cfg.MODEL.OCR.MID_CHANNELS
         ocr_key_channels = cfg.MODEL.OCR.KEY_CHANNELS
         num_classes = cfg.DATASET.NUM_CLASSES
@@ -161,7 +160,6 @@ class MscaleOCR(nn.Module):
     OCR net
     """
     def __init__(self, num_classes, trunk='hrnetv2', criterion=None):
-        print("!!__init__")
         super(MscaleOCR, self).__init__()
         self.criterion = criterion
         self.backbone, _, _, high_level_ch = get_trunk(trunk)
@@ -170,11 +168,69 @@ class MscaleOCR(nn.Module):
             in_ch=cfg.MODEL.OCR.MID_CHANNELS, out_ch=1)
 
     def _fwd(self, x):
-        print("!!_fwd")
         x_size = x.size()[2:]
 
         _, _, high_level_features = self.backbone(x)
+        
+        
+        
         cls_out, aux_out, ocr_mid_feats = self.ocr(high_level_features)
+        print(ocr_mid_feats.size())
+        if ocr_mid_feats.size()[2] == 128:
+            #for geoSAM
+            import torch
+            import torch.nn.functional as F
+            import numpy as np
+            
+            # print("Embeddings shape: ", high_level_features.size())
+            # Define the device (CPU or GPU)
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+            # Move the input tensor to the same device
+            input_tensor = ocr_mid_feats.to(device)
+
+            # Resize spatial dimensions using adaptive average pooling
+            resized_tensor = F.adaptive_avg_pool2d(input_tensor, (64, 64))
+
+            # Change the number of channels using a convolutional layer
+            conv_layer = torch.nn.Conv2d(in_channels=ocr_mid_feats.size()[1], out_channels=256, kernel_size=1).to(device)
+            sam_feats = conv_layer(resized_tensor)
+            # print("SAM Embeddings shape: ", sam_feats.size())
+
+            # Flatten the tensor to 2D (num_samples, num_features)
+            flattened_embeddings = sam_feats.view(sam_feats.size(0), -1)
+            flattened_embeddings = np.array(flattened_embeddings.cpu())
+            # # Get the unique values and their counts
+            # unique_values, counts = np.unique(flattened_embeddings, return_counts=True)
+
+            # # Display the unique values and their counts
+            # for value, count in zip(unique_values, counts):
+            #     print(f"Value: {value}, Count: {count}")
+            
+            
+            import h5py
+            
+            feat_file = "/home/rafi/tile2net/image_embeddings.h5"
+            try:
+                with h5py.File(feat_file, 'a') as hdf_file:
+                    # Create a dataset if it doesn't exist
+                    if 'data' not in hdf_file:
+                        dataset = hdf_file.create_dataset('data', shape=(0, flattened_embeddings.shape[1]), dtype='f', chunks=True, maxshape=(None, flattened_embeddings.shape[1]))
+                    else:
+                        dataset = hdf_file['data']
+                        # Get the current number of rows
+                    current_rows = dataset.shape[0]
+
+                    # Resize the dataset to accommodate the new row
+                    dataset.resize((current_rows + 1, dataset.shape[1]))
+                    
+                    # Append the list as a new row
+                    dataset[-1, :] = flattened_embeddings
+                    
+                    # Print the number of rows in the dataset after each append
+                    # print("Number of Rows after appending:", dataset.shape[0])
+            except Exception as e:
+                print(f"Couldn't save the embeddings: {e}")
         attn = self.scale_attn(ocr_mid_feats)
 
         aux_out = Upsample(aux_out, x_size)
@@ -186,7 +242,6 @@ class MscaleOCR(nn.Module):
                 'logit_attn': attn}
 
     def nscale_forward(self, inputs, scales):
-        print("Hierarchical attention, primarily used for getting best inference results.")
         """
         Hierarchical attention, primarily used for getting best inference
         results.
@@ -266,7 +321,6 @@ class MscaleOCR(nn.Module):
             return output_dict
 
     def two_scale_forward(self, inputs):
-        print("!!two_scale_forward")
         """
         Do we supervised both aux outputs, lo and high scale?
         Should attention be used to combine the aux output?
@@ -280,8 +334,6 @@ class MscaleOCR(nn.Module):
 
         x_lo = ResizeX(x_1x, cfg.MODEL.MSCALE_LO_SCALE)
         lo_outs = self._fwd(x_lo)
-        # print("Low Embeddings shape: ", lo_outs)
-        
         pred_05x = lo_outs['cls_out']
         p_lo = pred_05x
         aux_lo = lo_outs['aux_out']
@@ -289,8 +341,6 @@ class MscaleOCR(nn.Module):
         attn_05x = logit_attn
 
         hi_outs = self._fwd(x_1x)
-        # print("High Embeddings shape: ", hi_outs)
-        
         pred_10x = hi_outs['cls_out']
         p_1x = pred_10x
         aux_1x = hi_outs['aux_out']
@@ -305,61 +355,7 @@ class MscaleOCR(nn.Module):
         # combine lo and hi predictions with attention
         joint_pred = p_lo + (1 - logit_attn) * p_1x
         joint_aux = aux_lo + (1 - logit_attn) * aux_1x
-        #for geoSAM
-        import torch
-        import torch.nn.functional as F
-        import numpy as np
-        
-        print("Embeddings shape: ", joint_pred.size())
-        # Define the device (CPU or GPU)
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-        # Move the input tensor to the same device
-        input_tensor = joint_pred.to(device)
-
-        # Resize spatial dimensions using adaptive average pooling
-        resized_tensor = F.adaptive_avg_pool2d(input_tensor, (64, 64))
-
-        # Change the number of channels using a convolutional layer
-        conv_layer = torch.nn.Conv2d(in_channels=4, out_channels=256, kernel_size=1).to(device)
-        sam_feats = conv_layer(resized_tensor)
-        print("SAM Embeddings shape: ", sam_feats.size())
-
-        # Flatten the tensor to 2D (num_samples, num_features)
-        flattened_embeddings = sam_feats.view(sam_feats.size(0), -1)
-        flattened_embeddings = np.array(flattened_embeddings.cpu())
-        # # Get the unique values and their counts
-        # unique_values, counts = np.unique(flattened_embeddings, return_counts=True)
-
-        # # Display the unique values and their counts
-        # for value, count in zip(unique_values, counts):
-        #     print(f"Value: {value}, Count: {count}")
-        
-        
-        import h5py
-
-        feat_file = "/home/rafi/tile2net/image_embeddings_cambridge.h5"
-        try:
-            with h5py.File(feat_file, 'a') as hdf_file:
-                # Create a dataset if it doesn't exist
-                if 'data' not in hdf_file:
-                    dataset = hdf_file.create_dataset('data', shape=(0, flattened_embeddings.shape[1]), dtype='f', chunks=True, maxshape=(None, flattened_embeddings.shape[1]))
-                else:
-                    dataset = hdf_file['data']
-                    # Get the current number of rows
-                current_rows = dataset.shape[0]
-
-                # Resize the dataset to accommodate the new row
-                dataset.resize((current_rows + 1, dataset.shape[1]))
-                
-                # Append the list as a new row
-                dataset[-1, :] = flattened_embeddings
-                
-                # Print the number of rows in the dataset after each append
-                print("Number of Rows after appending:", dataset.shape[0])
-        except Exception as e:
-            print(f"Couldn't save the embeddings: {e}")
-        
+       
         if self.training:
             gts = inputs['gts']
             do_rmi = cfg.LOSS.OCR_AUX_RMI
@@ -390,7 +386,7 @@ class MscaleOCR(nn.Module):
             return output_dict
 
     def forward(self, inputs):
-        print("forward of two scales")
+        
         if cfg.MODEL.N_SCALES and not self.training:
             return self.nscale_forward(inputs, cfg.MODEL.N_SCALES)
 
@@ -402,5 +398,4 @@ def HRNet(num_classes, criterion):
 
 
 def HRNet_Mscale(num_classes, criterion):
-    print("!!HRNet_Mscale")
     return MscaleOCR(num_classes, trunk='hrnetv2', criterion=criterion)

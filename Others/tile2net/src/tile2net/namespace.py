@@ -412,7 +412,7 @@ class Namespace(
     global_rank: int = None
     city_info_path: Optional[str] = None
     hardnm: int = None
-    local_rank: int = 1
+    local_rank: int = None
     log_msinf_to_tb: bool = None
     lr: float = None
     map_crop_val: bool = None
@@ -450,6 +450,8 @@ class Namespace(
     world_size: int = None
 
     immutable: False
+
+    dump_percent: int = 100
 
     # torch_version = torch_version_float()
     interactive: bool = False

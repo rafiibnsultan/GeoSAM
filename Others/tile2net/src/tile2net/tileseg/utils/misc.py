@@ -208,7 +208,7 @@ class ImageDumper():
     converts them to images (doing transformations where necessary) and then
     writes the images out to disk.
     """
-    def __init__(self, val_len, tensorboard=True, write_webpage=True,
+    def __init__(self,args, val_len, tensorboard=True, write_webpage=True,
                  webpage_fn='index.html', dump_all_images=False, dump_assets=False,
                  dump_err_prob=False, dump_num=10, dump_for_auto_labelling=False,
                  dump_for_submission=False):

@@ -54,14 +54,15 @@ Requires-Dist: opencv-python
 Requires-Dist: osmnx
 Requires-Dist: pillow
 Requires-Dist: pyarrow
+Requires-Dist: pyogrio
 Requires-Dist: rasterio
 Requires-Dist: scikit-image
 Requires-Dist: scikit-learn
-Requires-Dist: shapely
+Requires-Dist: shapely==2.0.1
 Requires-Dist: tqdm
 Requires-Dist: torch
 Requires-Dist: torchvision
-Requires-Dist: argh
+Requires-Dist: argh==0.29.4
 Requires-Dist: coolname
 Requires-Dist: tabulate
 Requires-Dist: tensorboardx

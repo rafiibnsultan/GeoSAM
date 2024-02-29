@@ -165,6 +165,7 @@ class Raster(Grid):
         padding=True,
         # extension: str = 'png',
         source: Source | Type[Source] = None,
+        dump_percent: int = 0,
     ):
         """
 
@@ -204,6 +205,8 @@ class Raster(Grid):
             extension of the input images (default: 'png')
         source: Source | Type[Source] | str
             tile source (default: None)
+        dump_percent: int
+            percentage of the tiles to dump (default: None)
         """
         if name is None:
             name = util.name_from_location(location)
@@ -248,6 +251,10 @@ class Raster(Grid):
             raise ValueError('Tile size must be a multiple of 256' )
         if zoom is None:
             raise ValueError('Zoom level must be specified')
+        if tile_step & (tile_step - 1):
+            raise ValueError('Tile step must be a power of 2')
+        if not 0 <= dump_percent <= 100:
+            raise ValueError('Dump percent must be between 0 and 100')
 
         self.zoom = zoom
         self.source = source
@@ -262,6 +269,7 @@ class Raster(Grid):
         self.boundary_path = ''
         self.input_dir: InputDir = input_dir
         self.source = source
+        self.dump_percent = dump_percent
 
         if boundary_path:
             self.boundary_path = boundary_path
@@ -330,8 +338,7 @@ class Raster(Grid):
     """
     Stitch Tiles
     """
-    
-    
+
     def stitch(self, step: int, force=False) -> None:
         """Stitch tiles
         Args:
@@ -429,9 +436,9 @@ class Raster(Grid):
                 f'expected tile size {self.base_tilesize}.'
             )
 
-        gval = 50
+        gval = 0
         gray = np.full((self.base_tilesize, self.base_tilesize, 3), gval, dtype=np.uint8)
-        gval = np.full(3, 50)
+        gval = np.full(3, 0)
 
         def imread(file) -> np.ndarray:
             # just returns a gray tile if the file doesn't exist
@@ -645,93 +652,6 @@ class Raster(Grid):
                     )
             logger.info(f'All {self.tiles.size} tiles are on disk.', )
 
-    def create_mask(self, dest_path=None, **kwargs) -> None:
-        """
-        create the annotation label masks for the tiles
-        Parameters
-        ----------
-        dest_path: str
-            path to the folder where the masks will be saved
-        kwargs:
-            class: dict
-            path: str
-                path to the shapefile
-            usecols: list
-                list of columns to be used
-            col: dict
-                column name to be used as the label
-            if the column is a string, the label will be the same as the column name
-            if the column is a dict, the label will be the value of the key
-
-        Returns
-        -------
-        None
-        """
-        logger.info(f'{self.num_tiles} annotation masks will be created')
-
-        # stitched_dir_name = f'{self.name}_stitched-{self.base_tilesize * step}'
-        # dest_path = createfolder(os.path.join(tile_group_dir_path, stitched_dir_name))
-
-        urb_gdf = []
-        inds = []
-        for c, cls in enumerate(kwargs):
-            if isinstance(kwargs[cls], dict):
-                cols = kwargs[cls]['usecols']
-                gdf = read_dataframe(kwargs[cls]['path'], cols=cols, geo=True)
-                if isinstance(kwargs[cls]['col'], dict):
-                    gdf = prepare_gdf(gdf, **kwargs[cls]['col'])
-                urb_gdf.append(gdf)
-                inds.append(c)
-            assert isinstance(kwargs[cls],
-                dict), f"incorrect class config file, expected a path for class {cls}."
-
-        for c, tile in enumerate(self.tiles.flatten()):
-            if tile.active:
-                idd = tile.idd
-                pos = tile.position
-                tile.setLatlon
-                img = np.zeros([tile.size, tile.size, 3], np.uint8)
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-                dpi = 1200
-                # prepare the canvas
-                # fixme this is not efficient - pasting arrays should be a better way
-                fig, ax = plt.subplots(
-                    figsize=((img.shape[0] / float(dpi)), (img.shape[1] / float(dpi))))
-                plt.box(False)
-                fig.dpi = dpi
-                
-                fig.tight_layout(pad=0)
-                fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
-                ax.margins(0)
-                ax.get_xaxis().set_visible(False)
-                ax.get_yaxis().set_visible(False)
-                ax.set_facecolor('black')
-                for c2, ugdf in enumerate(urb_gdf):
-                    spind = prepare_spindex(ugdf)
-                    ucls = tile.get_region(ugdf, spind)
-                    if isinstance(ucls, pd.DataFrame):
-                        name = list(kwargs.keys())[inds[c2]]
-                        color = kwargs[name]['color']
-                        zorder = kwargs[name]['order']
-                        ucls.plot(ax=ax, color=color, alpha=1, zorder=zorder, antialiased=False)
-
-                top, left, bottom, right = tile.get_metric()
-                ax.imshow(img, extent=[top, bottom, right, left])
-
-                s, (width, height) = fig.canvas.print_to_buffer()
-                data = np.frombuffer(s, dtype=np.uint8).reshape(width, height, 4)
-                data = data[:, :, 0:3]
-                save_path = os.path.join(dest_path, f'annotations')
-                createfolder(save_path)
-
-                cv2.imwrite(os.path.join(save_path, f'{pos[0]}_{pos[1]}_{idd}.png'),
-                    cv2.cvtColor(data, cv2.COLOR_RGB2BGR))
-                fig.clf()
-                plt.close('all')
-                if c % 20 == 0:
-                    logger.info(f'{c} of {self.num_tiles}')
-            else:
-                continue
 
     def save_info_json(self, **kwargs):
         """
@@ -799,7 +719,7 @@ class Raster(Grid):
         step: int
             tile step to stitch the tiles
         """
-        # self.stitch(step)             #comment this out when we are using for creating masks
+        self.stitch(step)
         self.save_info_json(new_tstep=step)
         logger.info(f'Dumping to {self.project.tiles.info}')
         json.dump(
@@ -834,6 +754,8 @@ class Raster(Grid):
             '--city_info',
             str(info),
             '--interactive',
+            '--dump_percent',
+            str(self.dump_percent),
         ]
         logger.info(f'Running {args}')
         if eval_folder:

@@ -13,7 +13,6 @@ def get_net(args, criterion):
     """
     Get Network Architecture based on arguments provided
     """
-    print("!!init")
     net = get_model(network='tile2net.tileseg.network.' + args.arch,
                     num_classes=cfg.DATASET.NUM_CLASSES,
                     criterion=criterion)

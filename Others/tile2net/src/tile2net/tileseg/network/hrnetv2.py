@@ -263,7 +263,6 @@ blocks_dict = {
 class HighResolutionNet(nn.Module):
 
     def __init__(self, **kwargs):
-        print("!!HighResolutionNet")
         extra = cfg.MODEL.OCR_EXTRA
         super(HighResolutionNet, self).__init__()
 
@@ -317,7 +316,6 @@ class HighResolutionNet(nn.Module):
 
     def _make_transition_layer(
             self, num_channels_pre_layer, num_channels_cur_layer):
-        print("!!_make_transition_layer")
         num_branches_cur = len(num_channels_cur_layer)
         num_branches_pre = len(num_channels_pre_layer)
 
@@ -353,7 +351,6 @@ class HighResolutionNet(nn.Module):
         return nn.ModuleList(transition_layers)
 
     def _make_layer(self, block, inplanes, planes, blocks, stride=1):
-        print("!!_make_layer")
         downsample = None
         if stride != 1 or inplanes != planes * block.expansion:
             downsample = nn.Sequential(
@@ -372,7 +369,6 @@ class HighResolutionNet(nn.Module):
 
     def _make_stage(self, layer_config, num_inchannels,
                     multi_scale_output=True):
-        print("!!_make_stage")
         num_modules = layer_config['NUM_MODULES']
         num_branches = layer_config['NUM_BRANCHES']
         num_blocks = layer_config['NUM_BLOCKS']
@@ -401,7 +397,6 @@ class HighResolutionNet(nn.Module):
         return nn.Sequential(*modules), num_inchannels
 
     def forward(self, x_in):
-        print("!!!forward")
         x = self.conv1(x_in)
         x = self.bn1(x)
         x = self.relu(x)
@@ -441,7 +436,6 @@ class HighResolutionNet(nn.Module):
         x = self.stage4(x_list)
 
         # Upsampling
-        print("!!Upscaling")
         x0_h, x0_w = x[0].size(2), x[0].size(3)
         x1 = F.interpolate(x[1], size=(x0_h, x0_w),
                            mode='bilinear', align_corners=align_corners)
@@ -451,57 +445,7 @@ class HighResolutionNet(nn.Module):
                            mode='bilinear', align_corners=align_corners)
 
         feats = torch.cat([x[0], x1, x2, x3], 1)
-        
-        # if feats.shape[2] == 128:
-        #     print("Embeddings shape: ", feats.size())
-        #     # Define the device (CPU or GPU)
-        #     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        #     # Move the input tensor to the same device
-        #     input_tensor = feats.to(device)
-
-        #     # Resize spatial dimensions using adaptive average pooling
-        #     resized_tensor = F.adaptive_avg_pool2d(input_tensor, (64, 64))
-
-        #     # Change the number of channels using a convolutional layer
-        #     conv_layer = torch.nn.Conv2d(in_channels=720, out_channels=256, kernel_size=1).to(device)
-        #     sam_feats = conv_layer(resized_tensor)
-        #     print("SAM Embeddings shape: ", sam_feats.size())
-
-        #     # Flatten the tensor to 2D (num_samples, num_features)
-        #     flattened_embeddings = sam_feats.view(sam_feats.size(0), -1)
-        #     flattened_embeddings = np.array(flattened_embeddings.cpu())
-        #     # # Get the unique values and their counts
-        #     # unique_values, counts = np.unique(flattened_embeddings, return_counts=True)
-
-        #     # # Display the unique values and their counts
-        #     # for value, count in zip(unique_values, counts):
-        #     #     print(f"Value: {value}, Count: {count}")
-            
-            
-        #     import h5py
-
-        #     feat_file = "/home/rafi/tile2net/image_embeddings.h5"
-        #     try:
-        #         with h5py.File(feat_file, 'a') as hdf_file:
-        #             # Create a dataset if it doesn't exist
-        #             if 'data' not in hdf_file:
-        #                dataset = hdf_file.create_dataset('data', shape=(0, flattened_embeddings.shape[1]), dtype='f', chunks=True, maxshape=(None, flattened_embeddings.shape[1]))
-        #             else:
-        #                 dataset = hdf_file['data']
-        #                 # Get the current number of rows
-        #             current_rows = dataset.shape[0]
-
-        #             # Resize the dataset to accommodate the new row
-        #             dataset.resize((current_rows + 1, dataset.shape[1]))
-                    
-        #             # Append the list as a new row
-        #             dataset[-1, :] = flattened_embeddings
-                    
-        #             # Print the number of rows in the dataset after each append
-        #             print("Number of Rows after appending:", dataset.shape[0])
-        #     except Exception as e:
-        #         print(f"Couldn't save the embeddings: {e}")
         return None, None, feats
 
     def init_weights(self, pretrained=cfg.MODEL.HRNET_CHECKPOINT):
@@ -534,15 +478,6 @@ class HighResolutionNet(nn.Module):
 
 
 def get_seg_model():
-    import h5py
-    #clear the JSON file for saving the embeddings
-    
-    file_path = "/home/rafi/tile2net/image_embeddings2.h5"
-    
-    # Open the existing HDF5 file in write mode ('w') to remove all content
-    with h5py.File(file_path, 'w') as hdf_file:
-        pass
-    print("!!hrnetv2")
     model = HighResolutionNet()
     model.init_weights()
 
