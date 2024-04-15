@@ -3,7 +3,7 @@
 Hello,
 This is an updated version of GeoSAM, here, we implement a fine-tuning approach with automatically generated multi-modal prompts, specifically, point prompts from a pre-trained, task-specific traditional model, complemented by text prompts provided by users.
 
-Contrasting with the previous version, which you can find in the <a href="https://github.com/rafiibnsultan/GeoSAM/tree/Geosam_old">GeoSAM_old branch</a>.
+Contrasting with the previous version, which you can find in the <a href="https://github.com/rafiibnsultan/GeoSAM/tree/GeoSAM_old">GeoSAM_old branch</a>.
 
 In the previous approach, we were using feature embeddings from a traditional model to create dense prompts which was assisting our sparse or click prompts generation. However, in the new version, we have decided to use the assistance of natural language. So, instead of dense prompts, we use text prompts from natural language to provide SAM with a more natural language context to assist the click prompts. We incorporate a multi-prompts system by using texts as direct prompts for SAM which aids the model by providing more semantic context. We will provide a copy of the updated manuscript whenever it is ready.
 
