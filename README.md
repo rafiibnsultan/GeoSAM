@@ -1,5 +1,7 @@
 # GeoSAM: Fine-tuning SAM with Sparse and Dense Visual Prompting for Automated Segmentation of Mobility Infrastructure
 
+(Hello, this is currently the old approach we tried. The "updated" approach that can take "text" as prompts in addition to sparse or click prompts can be found in the <a href="https://github.com/rafiibnsultan/GeoSAM/tree/GeoSAM_with_text">GeoSAM_with_text branch</a>
+
 This repository is dedicated to the work of GeoSAM. Please find the paper here: <a href="https://arxiv.org/abs/2311.11319">Link</a>
 
 
