@@ -8,7 +8,7 @@ Contrasting with the previous version, which you can find in the <a href="https:
 In the previous approach, we were using feature embeddings from a traditional model to create dense prompts which was assisting our sparse or click prompts generation. However, in the new version, we have decided to use the assistance of natural language. So, instead of dense prompts, we use text prompts from natural language to provide SAM with a more natural language context to assist the click prompts. We incorporate a multi-prompts system by using texts as direct prompts for SAM which aids the model by providing more semantic context. We will provide a copy of the updated manuscript whenever it is ready.
 
 
-Also, please find the <a href="https://waynestateprod-my.sharepoint.com/:u:/g/personal/hm4013_wayne_edu/EXvJFrshs9RAm68KYnkKJ7gB4D4gB65CCXmasoDYUIplMw?e=6h7CKx">link</a> for the weights.
+Also, please find the <a href="https://waynestateprod-my.sharepoint.com/:u:/g/personal/hm4013_wayne_edu/EYnxUCLByk5Cp684H_xKK4UBaeXUY02VLaeJTZSoyubZTQ?e=W2hMN6">link</a> for the weights.
 
 
 
