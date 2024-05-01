@@ -26,9 +26,9 @@ import utils
 torch.manual_seed(2023)
 np.random.seed(2023)
 
-#define the mode
-
 text = True
+chatGPT = True
+
 class CustomDataset(Dataset):
     def __init__(self, root_dir, transform=None):
         self.root_dir = root_dir
@@ -96,6 +96,8 @@ sam.to(device=device)
 sam.train()
 predictor = SamPredictor(sam)
 
+#implementation details
+
 
 projection_layer = nn.Linear(512, 256).to(device)
 optimizer = torch.optim.AdamW(list(sam.mask_decoder.parameters()) + list(projection_layer.parameters()), lr=1e-5, weight_decay=0.1)
@@ -109,7 +111,9 @@ best_loss = 1e10
 
 scheduler = CosineAnnealingLR(optimizer, T_max=num_epochs, eta_min=1e-7)        
 classes = [0, 29, 75]       # 0=background, 29 = pedestrian, 75 = road, (it depends on the original color of the masks in the gts)
-mod_cls_txt_encoding = torch.load("/home/rafi/GeoSAM/mod_cls_txt_encoding.pth").to(device)
+class_names = ["Background","Sidewalk and crosswalk", "Roads"]
+if chatGPT==False:
+    mod_cls_txt_encoding = torch.load("/home/rafi/GeoSAM/mod_cls_txt_encoding.pth").to(device)
 
 input_size = (1024,1024)
 original_size = (1024,1024)
@@ -134,14 +138,21 @@ for epoch in range(num_epochs):
                 if channel == 0:
                     embeddings = None
                 else:
-                    embeddings = mod_cls_txt_encoding[0][channel-1]       #torch.Size([512])    
+                    if chatGPT == True:
+                        embeddings = utils.chatGPT_description(class_names[channel],device).to(device)
+                        embeddings = embeddings.squeeze(0)
+                        # print(embeddings.shape)                                 #torch.Size([512])  
+                    else:
+                        embeddings = mod_cls_txt_encoding[0][channel-1]       #torch.Size([512])    
                     with autocast():
                         embeddings = projection_layer(embeddings.half())    #torch.Size([256])
+                        
                 with torch.no_grad():
                     # gt_channel = gt[:, :, channel]
                     predictor.set_image(image)
                     image_embedding = predictor.get_image_embedding()
-                    
+                
+                
                 left_clicks, right_clicks = utils.get_random_points(mask,classes[channel])
                 all_points = np.concatenate((left_clicks, right_clicks), axis=0)
                 all_points = np.array(all_points)
@@ -252,7 +263,7 @@ for epoch in range(num_epochs):
             torch.save({
                 'projection_layer': projection_layer.state_dict(),
                 'sam': sam.state_dict(),
-            }, join(model_save_path, 'sam_decoder_multi_text.pth'))
+            }, join(model_save_path, 'sam_decoder_multi_text_gpt.pth'))
         else:
             torch.save({
                 'projection_layer': projection_layer.state_dict(),

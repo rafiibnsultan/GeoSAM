@@ -3,6 +3,13 @@ import cv2
 import torch
 import h5py
 
+import clip
+import torch
+
+import os
+from openai import OpenAI
+os.environ['OPENAI_API_KEY'] = 'your-API-key'
+
 def get_random_points(mask, mask_value, foreground_points=2000, background_points=1000):
     ## road = 75, sidewalk/crosswalk = 29, background = 0
     # Find the indices (coordinates) of the foreground pixels
@@ -89,3 +96,22 @@ def check_embeddings_file(file_path):
         print("Retrieved Row:", retrieved_row)
         
     return(np.unique(retrieved_row))
+
+def chatGPT_description(class_name, device):
+    client = OpenAI()
+    completion = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a creative assistant, skilled in providing detailed visual descriptions of objects as seen in aerial imagery."},
+            {"role": "user", "content": f"Print out a visual description (don't mention their names) that can be seen from aerial images of {class_name} (in one line, 4 to 5 words, not more, not less)."}
+        ]
+    )
+    
+    
+    sentence = [f'{class_name}: {completion.choices[0].message.content}']
+    # print(sentence)
+    model, _ = clip.load('ViT-B/32', device)
+    
+    text_inputs = clip.tokenize(sentence).to(device)
+    text_features = model.encode_text(text_inputs) 
+    return text_features

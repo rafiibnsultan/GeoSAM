@@ -28,8 +28,8 @@ from torch.cuda.amp import autocast
 
 import utils
 
-#define the mood 
 text = True
+chatGPT = True
 
 class CustomDataset(Dataset):
     def __init__(self, root_dir, transform=None):
@@ -84,9 +84,12 @@ dataset = CustomDataset(root_folder, transform=transform)
 batch_size = 1
 dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
 
-#loading saved weights
+# loading saved weights
 if text==True:
-    state_dicts = torch.load("/home/rafi/SAM/sam_decoder_multi_text.pth") #this is the fine-tuned SAM decoder you get after you done the training
+    if chatGPT == True:
+        state_dicts = torch.load("/home/rafi/SAM/sam_decoder_multi_text_gpt.pth") #this is the fine-tuned SAM decoder you get after you done the training
+    else:
+        state_dicts = torch.load("/home/rafi/SAM/sam_decoder_multi_text.pth") #this is the fine-tuned SAM decoder you get after you done the training
 else:
     state_dicts = torch.load("/home/rafi/SAM/sam_decoder_multi_without_text.pth") #this is the fine-tuned SAM decoder you get after you done the training
 model_type = "vit_h"        
@@ -108,7 +111,10 @@ mIOU_metric_batch = MeanIoU(include_background=False, reduction="mean_batch", ge
 
 #inference loop
 classes = [0, 29, 75] # 0=background, 29 = pedestrian, 75 = road, (it depends on the original color of the masks in the gts)
-mod_cls_txt_encoding = torch.load("/home/rafi/GeoSAM/mod_cls_txt_encoding.pth").to(device)
+class_names = ["Background","Sidewalk and crosswalk", "Roads"]
+
+if chatGPT==False:
+    mod_cls_txt_encoding = torch.load("/home/rafi/GeoSAM/mod_cls_txt_encoding.pth").to(device)
 
 input_size = (1024,1024)
 original_size = (1024,1024)
@@ -133,7 +139,12 @@ for idx, (images, masks, gts, image_names) in enumerate(tqdm(dataloader)):
             if channel == 0:
                     embeddings = None
             else:
-                embeddings = mod_cls_txt_encoding[0][channel-1]       #torch.Size([512])    
+                if chatGPT == True:
+                    embeddings = utils.chatGPT_description(class_names[channel],device).to(device)
+                    embeddings = embeddings.squeeze(0)
+                    # print(embeddings.shape)                                 #torch.Size([512])  
+                else:
+                    embeddings = mod_cls_txt_encoding[0][channel-1]       #torch.Size([512])    
                 with autocast():
                     embeddings = projection_layer(embeddings.half())    #torch.Size([256])
             predictor.set_image(image)
@@ -242,20 +253,20 @@ for idx, (images, masks, gts, image_names) in enumerate(tqdm(dataloader)):
         predictions = torch.stack(predictions).cpu().detach().numpy()
         gts = torch.stack(gts).cpu().detach().numpy()
         
-        #mAP
-        # Step 1: Extract relevant channels (excluding the background)
-        predictions = predictions[:, 1:, :, :].reshape(2, -1) # Shape: (1, 2, 1024, 1024)
-        gts = gts[:, 1:, :, :].reshape(2, -1)                # Shape: (1, 2, 1024, 1024)
+        # #mAP
+        # # Step 1: Extract relevant channels (excluding the background)
+        # predictions = predictions[:, 1:, :, :].reshape(2, -1) # Shape: (1, 2, 1024, 1024)
+        # gts = gts[:, 1:, :, :].reshape(2, -1)                # Shape: (1, 2, 1024, 1024)
 
 
-        # Step 3 & 4: Compute average precision score for each class
-        ap_scores = [average_precision_score(gts[i], predictions[i]) for i in range(2)]
+        # # Step 3 & 4: Compute average precision score for each class
+        # ap_scores = [average_precision_score(gts[i], predictions[i]) for i in range(2)]
 
-        mAP.append(ap_scores)
+        # mAP.append(ap_scores)
 metric_batch = mIOU_metric_batch.aggregate()
 print(f"IoU of Sidewalk/Crosswalk: {metric_batch[0][0].item()}, IoU of road: {metric_batch[0][1].item()}")
 
-mAP = np.array(mAP)
-print(f"mAP of Sidewalk/Crosswalk: {mAP[:, 0].mean()}, mAP of road: {mAP[:, 1].mean()}")
+# mAP = np.array(mAP)
+# print(f"mAP of Sidewalk/Crosswalk: {mAP[:, 0].mean()}, mAP of road: {mAP[:, 1].mean()}")
 
                 
