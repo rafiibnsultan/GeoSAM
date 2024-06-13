@@ -17,7 +17,9 @@ This work has been submitted. Waiting for the decision.
 <img src="Pipeline.png" alt="GeoSAM">
 ## Acknowledgement
 We want to thank these two works for their open-source code and contributions to the respective fields!
+
 <a href="https://openaccess.thecvf.com/content/ICCV2023/html/Kirillov_Segment_Anything_ICCV_2023_paper.html">Segment Anything Model (SAM)</a>
+
 <a href="https://proceedings.aesop-planning.eu/index.php/aesopro/article/view/39">MAPPING THE WALK: A SCALABLE COMPUTER VISION APPROACH FOR GENERATING SIDEWALK NETWORK DATASETS FROM AERIAL IMAGERY.</a>
 
 
