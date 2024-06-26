@@ -7,7 +7,7 @@ This repository is dedicated to the work of GeoSAM. Please find the paper here: 
 
 Also, please find the <a href="https://waynestateprod-my.sharepoint.com/:u:/g/personal/hm4013_wayne_edu/EXvJFrshs9RAm68KYnkKJ7gB4D4gB65CCXmasoDYUIplMw?e=6h7CKx">link</a> for the weights.
 
-
+See the demo here: [demo.ipynb](https://github.com/rafiibnsultan/GeoSAM/blob/GeoSAM_with_text/demo/)
 This work has been submitted. Waiting for the decision.
 
 
