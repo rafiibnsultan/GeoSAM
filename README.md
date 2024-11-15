@@ -3,7 +3,7 @@
 Hello,
 This is an updated version of GeoSAM, here, we implement a fine-tuning approach with automatically generated multi-modal prompts, specifically, point prompts from a pre-trained, task-specific traditional model, complemented by text prompts provided by users.
 
-If you have any questions, fill out this [form]([https://github.com/rafiibnsultan/GeoSAM/blob/GeoSAM_with_text/demo/](https://forms.gle/yagVwyw89mUbYb879))  or just email me at hm4013@wayne.edu. I will get back to you as soon as possible.
+If you have any questions, fill out this [form](https://forms.gle/yagVwyw89mUbYb879)  or just email me at hm4013@wayne.edu. I will get back to you as soon as possible.
 
 See the [demo](https://github.com/rafiibnsultan/GeoSAM/blob/GeoSAM_with_text/demo/) here.
 
