@@ -3,7 +3,7 @@
 ## (Hello, this is currently the old approach we tried. The "updated" approach that can take "text" as prompts in addition to sparse or click prompts can be found in the <a href="https://github.com/rafiibnsultan/GeoSAM/tree/GeoSAM_with_text">GeoSAM_with_text branch</a>)
 
 This repository is dedicated to the work of GeoSAM. Please find the paper here: <a href="https://arxiv.org/abs/2311.11319">Link</a>
-
+If you have any questions, fill out this [form](https://forms.gle/yagVwyw89mUbYb879)  or just email me at hm4013@wayne.edu. I will get back to you as soon as possible.
 
 Also, please find the <a href="https://waynestateprod-my.sharepoint.com/:u:/g/personal/hm4013_wayne_edu/EXvJFrshs9RAm68KYnkKJ7gB4D4gB65CCXmasoDYUIplMw?e=6h7CKx">link</a> for the weights.
 
