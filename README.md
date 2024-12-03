@@ -24,7 +24,10 @@ We want to thank these two works for their open-source code and contributions to
 
 <a href="https://proceedings.aesop-planning.eu/index.php/aesopro/article/view/39">MAPPING THE WALK: A SCALABLE COMPUTER VISION APPROACH FOR GENERATING SIDEWALK NETWORK DATASETS FROM AERIAL IMAGERY.</a>
 
+## Grant Information
+This work was supported by the U.S. National Science Foundation (NSF), Innovation and Technology Ecosystems (ITE), under Award Number 2235225 as part of the NSF Convergence Accelerator Track H: _Leveraging Human-Centered AI Microtransit to Ameliorate Spatiotemporal Mismatch between Housing and Employment for Persons with Disabilities_. We thank the Innovation and Technology Ecosystems program for their invaluable contributions.
 
+Any opinions, findings, and conclusions or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the National Science Foundation.
 
 ## Citations
 
@@ -37,3 +40,4 @@ If these codes are helpful for your study, please cite:
   journal={arXiv preprint arXiv:2311.11319},
   year={2023}
 }
+
