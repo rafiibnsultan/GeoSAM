@@ -40,9 +40,12 @@ Any opinions, findings, and conclusions or recommendations expressed in this mat
 If these codes are helpful for your study, please cite:
 
 ```bibtex
-@article{sultan2023geosam,
-  title={GeoSAM: Fine-tuning SAM with sparse and dense visual prompting for automated segmentation of mobility infrastructure},
-  author={Sultan, Rafi Ibn and Li, Chengyin and Zhu, Hui and Khanduri, Prashant and Brocanelli, Marco and Zhu, Dongxiao},
-  journal={arXiv preprint arXiv:2311.11319},
-  year={2023}
+@misc{sultan2024geosamfinetuningsammultimodal,
+      title={GeoSAM: Fine-tuning SAM with Multi-Modal Prompts for Mobility Infrastructure Segmentation}, 
+      author={Rafi Ibn Sultan and Chengyin Li and Hui Zhu and Prashant Khanduri and Marco Brocanelli and Dongxiao Zhu},
+      year={2024},
+      eprint={2311.11319},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2311.11319}, 
 }
