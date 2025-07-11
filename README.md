@@ -20,7 +20,7 @@ Also, please find the <a href="https://waynestateprod-my.sharepoint.com/:u:/g/pe
 ## Abstract:
 <p class="justified-text">The Segment Anything Model (SAM) has shown impressive performance when applied to natural image segmentation. However, it struggles with geographical images like aerial and satellite imagery, especially when segmenting mobility infrastructure including roads, sidewalks, and crosswalks. This inferior performance stems from the narrow features of these objects and their textures blending into the surroundings. To address these challenges, we propose Geographical SAM (GeoSAM), a novel SAM-based framework that implements a fine-tuning approach with automatically generated multi-modal prompts, specifically, point prompts from a pre-trained, task-specific traditional model, complemented by text prompts provided by users. GeoSAM uses point prompts to serve as the main guidance for the model, Whereas text prompts act as secondary prompts, providing a semantic understanding of natural language to enhance the model's comprehension abilities. The proposed GeoSAM outperforms existing approaches for geographical image segmentation, specifically by 30%, and 7% for road infrastructure, and pedestrian infrastructure, respectively, representing a momentous leap in leveraging foundation models to segment mobility infrastructure including both road and pedestrian infrastructure in geographical images.</p>
 
-<img src="Pipeline.png" alt="GeoSAM">
+<img src="Pipeline.jpg" alt="GeoSAM">
 
 ## Acknowledgement
 We want to thank these two works for their open-source code and contributions to the respective fields!
