@@ -1,3 +1,5 @@
+### 🚀 Excited to share that our paper "GeoSAM: Fine-tuning SAM with Multi-Modal Prompts for Mobility Infrastructure Segmentation" has been accepted to the **28th European Conference on Artificial Intelligence (ECAI 2025)**.
+
 # GeoSAM: Fine-tuning SAM with Multi-Modal Prompts for Mobility Infrastructure Segmentation
 
 Hello,
