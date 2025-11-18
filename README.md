@@ -16,6 +16,7 @@ Also, please find the <a href="https://waynestateprod-my.sharepoint.com/:u:/g/pe
 
 ## 📰 News
 🚀 Excited to share that our paper **"GeoSAM: Fine-tuning SAM with Multi-Modal Prompts for Mobility Infrastructure Segmentation"** has been accepted to the **28th European Conference on Artificial Intelligence (ECAI 2025)**.
+
 📄 Paper link: https://ebooks.iospress.nl/doi/10.3233/FAIA250844
 
 **Additional Updates**
