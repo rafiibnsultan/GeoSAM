@@ -48,12 +48,33 @@ Any opinions, findings, and conclusions or recommendations expressed in this mat
 If these codes are helpful for your study, please cite:
 
 ```bibtex
-@misc{sultan2024geosamfinetuningsammultimodal,
-      title={GeoSAM: Fine-tuning SAM with Multi-Modal Prompts for Mobility Infrastructure Segmentation}, 
-      author={Rafi Ibn Sultan and Chengyin Li and Hui Zhu and Prashant Khanduri and Marco Brocanelli and Dongxiao Zhu},
-      year={2024},
-      eprint={2311.11319},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2311.11319}, 
+@inproceedings{DBLP:conf/ecai/SultanL0KBZ25,
+  author       = {Rafi Ibn Sultan and
+                  Chengyin Li and
+                  Hui Zhu and
+                  Prashant Khanduri and
+                  Marco Brocanelli and
+                  Dongxiao Zhu},
+  editor       = {In{\^{e}}s Lynce and
+                  Nello Murano and
+                  Mauro Vallati and
+                  Serena Villata and
+                  Federico Chesani and
+                  Michela Milano and
+                  Andrea Omicini and
+                  Mehdi Dastani},
+  title        = {GeoSAM: Fine-Tuning {SAM} with Multi-Modal Prompts for Mobility Infrastructure
+                  Segmentation},
+  booktitle    = {{ECAI} 2025 - 28th European Conference on Artificial Intelligence,
+                  25-30 October 2025, Bologna, Italy - Including 14th Conference on
+                  Prestigious Applications of Intelligent Systems {(PAIS} 2025)},
+  series       = {Frontiers in Artificial Intelligence and Applications},
+  pages        = {501--508},
+  publisher    = {{IOS} Press},
+  year         = {2025},
+  url          = {https://doi.org/10.3233/FAIA250844},
+  doi          = {10.3233/FAIA250844},
+  timestamp    = {Thu, 19 Feb 2026 17:28:40 +0100},
+  biburl       = {https://dblp.org/rec/conf/ecai/SultanL0KBZ25.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
